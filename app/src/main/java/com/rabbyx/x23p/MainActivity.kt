@@ -1,5 +1,6 @@
 package com.rabbyx.x23p
 
+import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -22,6 +23,14 @@ class MainActivity : AppCompatActivity() {
 
         // Execute the command to get the list of packages asynchronously
         GetProcessListTask().execute()
+
+        // Set an item click listener for the ListView
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val packageName = listView.getItemAtPosition(position).toString().removePrefix("package:")
+            val intent = Intent(this, SyscallActivity::class.java)
+            intent.putExtra("PACKAGE_NAME", packageName)
+            startActivity(intent)
+        }
     }
 
     private inner class GetProcessListTask : AsyncTask<Void, Void, Array<String>?>() {
@@ -67,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             super.onPostExecute(result)
 
             if (result != null && result.isNotEmpty()) {
-                // Set the result in the ListView
+                // Use the default ArrayAdapter with simple_list_item_1
                 val adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, result)
                 listView.adapter = adapter
             } else {
